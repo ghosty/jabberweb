@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <!--Meta-->
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+		
+		<!--Title-->
+		<title>Weruchat - Error</title>
+		
+		<!--Scripts-->
+		<script type="text/javascript" src="scripts/emoticons.js"></script>
+		<script type="text/javascript" src="scripts/shared.js"></script>
+		<script type="text/javascript" src="scripts/switchStyle.js"></script>
+		<script type="text/javascript">
+			<!--
+			var messages = new Array();
+			var curMSG = lastMSG = 0;
+			
+			function showMSG(){
+			
+			    /* look for error message */
+			    if (messages[curMSG].getNode().getElementsByTagName('error').item(0)) {
+			        var aErr = messages[curMSG].getNode().getElementsByTagName('error').item(0);
+			        
+			        if (aErr.getAttribute('code')) 
+			            document.getElementById('error_code').innerHTML = aErr.getAttribute('code');
+			        if (aErr.firstChild.nodeValue) 
+			            document.getElementById('error_data').innerHTML = aErr.firstChild.nodeValue;
+			    }
+			    
+			    /*set subject */
+			    if (messages[curMSG].getSubject()) 
+			        document.getElementById('subject').innerHTML = messages[curMSG].getSubject();
+			    
+			    /* set date */
+			    var date;
+			    if (messages[curMSG].jwcTimestamp) 
+			        date = messages[curMSG].jwcTimestamp;
+			    else 
+			        date = new Date();
+			    
+			    document.getElementById('date').innerHTML = date.toLocaleString();
+			    
+			    /* set body */
+			    msgbox.document.body.innerHTML = msgFormat(messages[curMSG].getBody());
+			    
+			    /* set buttons */
+			    if (curMSG == 0) 
+			        document.forms[0].elements["prevButton"].disabled = true;
+			    else 
+			        document.forms[0].elements["prevButton"].disabled = false;
+			    if (curMSG + 1 == lastMSG && srcW.error_messages.length == 0) 
+			        document.forms[0].elements["nextButton"].disabled = true;
+			    else 
+			        document.forms[0].elements["nextButton"].disabled = false;
+			}
+			
+			function getNextMSG(){ // gets message from roster
+			    messages[lastMSG++] = srcW.error_messages[0];
+			    srcW.error_messages = srcW.error_messages.slice(1, srcW.error_messages.length);
+			}
+			
+			function next(){
+			    curMSG++;
+			    if (curMSG == lastMSG) {
+			        if (srcW.error_messages.length > 0) 
+			            getNextMSG();
+			        else 
+			            curMSG--;
+			    }
+			    
+			    showMSG();
+			    return false;
+			}
+			
+			function prev(){
+			    curMSG--;
+			    if (curMSG < 0) 
+			        curMSG = 0;
+			    showMSG();
+			    return false;
+			}
+			
+			var srcW, user;
+			function init(){
+			    srcW = opener.top;
+			    if (srcW.error_messages.length > 0) {
+			        // show messages
+			        document.title = "Error"; // set title
+			        getNextMSG();
+			        showMSG();
+			    }
+			}
+			
+			onload = init;
+			//-->
+		</script>
+	</head>
+	<body>
+		<form name="msg">
+			<p>Error <span id="error_code"></span>:<span id="error_data"></span></p>
+			<p>Date: <span id="date"></span></p>
+			<p>Subject: <span id="subject"></span></p>
+			<iframe src="chat_iframe.html" id="msgbox" name="msgbox" scrolling="auto"></iframe>
+			<p><button onclick="return prev();" id="prevButton">prev</button> <button onclick="return next();" id="nextButton">next</button> <button onclick="window.close();">Close</button></p>
+		</form>
+	</body>
+</html>

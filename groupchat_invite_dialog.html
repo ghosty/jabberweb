@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<!--Meta-->
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		
+		<!--Title-->
+		<title>Weruchat - Invite users</title>
+		
+		<!--Scripts-->
+		<script type="text/javascript" src="scripts/switchStyle.js"></script>
+		<script type="text/javascript" src="scripts/jsjac.js"></script>
+		<script type="text/javascript">
+			<!--
+			
+			function doSub(){
+			    var users_selector = document.getElementById('users_selector');
+			    
+			    for (var i = 0; i < users_selector.options.length; i++) {
+			        if (users_selector.options[i].selected) {
+			            var aMessage = new JSJaCMessage();
+			            aMessage.setTo(opener.parent.jid);
+			            var x = aMessage.appendNode('x', {
+			                'xmlns': 'http://jabber.org/protocol/muc#user'
+			            });
+			            var aNode = x.appendChild(aMessage.getDoc().createElement('invite'));
+			            aNode.setAttribute('to', users_selector.options[i].value);
+			            if (document.forms[0].reason.value != '') 
+			                aNode.appendChild(aMessage.getDoc().createElement('reason')).appendChild(aMessage.getDoc().createTextNode(document.forms[0].reason.value));
+			            srcW.Debug.log(aMessage.getDoc().xml);
+			            srcW.con.send(aMessage);
+			        }
+			    }
+			    
+			    window.close();
+			}
+			
+			var srcW;
+			function init(){
+			    srcW = opener.parent.srcW;
+			    
+			    // fill selector with users from main roster
+			    var users_selector = document.getElementById('users_selector');
+			    var optidx = 0;
+			    for (var i = 0; i < srcW.roster.users.length; i++) {
+			        if (typeof(srcW.roster.users[i].roster) != 'undefined' || srcW.isGateway(srcW.roster.users[i].jid)) // skip groupchats and gateways
+			            continue;
+			        users_selector[optidx++] = new Option(srcW.roster.users[i].name, srcW.roster.users[i].jid);
+			    }
+			    
+			    document.title = "Invite Users to " + opener.parent.jid;
+			}
+			
+			function keyPressed(e){
+			    if (e.ctrlKey && e.keyCode == 13) 
+			        return doSub();
+			    else 
+			        if (e.keyCode == 27) 
+			            close();
+			}
+			
+			onkeydown = keyPressed;
+			onload = init;
+			//-->
+		</script>
+		<script for="document" event="onkeydown()" language="JScript">
+			<!--
+			if (window.event.ctrlKey && window.event.keyCode == 13) 
+			    return doSub();
+			if (window.event.keyCode == 27) 
+			    window.close();
+			//-->
+		</script>
+	</head>
+	<body>
+		<form id="invite_form" name="invite_form" action="" method="post">
+			<fieldset>
+				<legend class="hidden">Invite users</legend>
+				<ol>
+					<li>
+						<label for="users_selector">Select user(s)</label>
+						<select name="users_selector" id="users_selector" size=3 multiple="multiple"></select>
+					</li>
+					<li>
+						<label for="reason">Reason</label>
+						<textarea id="reason" name="reason" class="large"></textarea>
+					</li>
+					<li>
+						<button type=submit onclick="return doSub();">Invite</button>
+					</li>
+				</ol>
+			</fieldset>
+		</form>
+	</body>
+</html>

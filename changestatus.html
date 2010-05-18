@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<!--Meta-->
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		
+		<!--Title-->
+		<title>Weruchat - Change Online Status</title>
+	</head>
+	<body>
+		<form id="change-status" method="post" action="">
+			<fieldset>
+				<legend class="hidden">Change status</legend>
+				<ol>
+					<li>
+						<label for="available">
+							<input type=radio name="status" value="available" id="available" />
+							<img src="images/available.gif" alt="Online" title="Online" />
+						</label>
+					</li>
+					<li>
+						<label for="xa">
+							<input type=radio name="status" value="xa" id="xa" />
+							<img src="images/xa.gif" alt="Not available" title="Not available" />
+						</label>
+					</li>
+					<li>
+						<label for="chaty">
+							<input type=radio name="status" value="chat" id="chaty" />
+							<img src="images/chat.gif" alt="Free for chat" title="Free for chat" />
+						</label>
+					</li>
+					<li>
+						<label for="dnd">
+							<input type=radio name="status" value="dnd" id="dnd" />
+							<img src="images/dnd.gif" alt="Do not disturb" title="Do not disturb" />
+						</label>
+					</li>
+					<li>
+						<label for="away">
+							<input type=radio name="status" value="away" id="away" />
+							<img src="images/away.gif" alt="Away" title="Away" />
+						</label>
+					</li>
+					<li>
+						<label for="unavailable">
+							<input type=radio name="status" value="unavailable" id="unavailable" />
+							<img src="images/invisible.gif" alt="Invisible" title="Invisible" />
+						</label>
+					</li>
+					<li id="offline">
+						<label for="offl">
+							<input type=radio name="status" value="offline" id="offline" />
+							<img src="images/unavailable.gif" alt="Offline" title="Offline" />
+						</label>
+					</li>
+					<li>
+						<textarea id="message" name="message" class="large"></textarea>
+					</li>
+					<li>
+						<button type="reset">Cancel</button>
+						<button type="submit">Set</button>
+					</li>
+				</ol>
+			</fieldset>
+		</form>
+		
+		<!--Scripts-->
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" charset="UTF-8"></script>
+		<script type="text/javascript" src="scripts/shared.js"></script>
+		<script type="text/javascript">
+		(function($){
+		    var jid,
+				srcW;
+		    
+		    $('#change-status').submit(function(){
+		        var newstat, away;
+		        
+		        $('#change-status :radio').bind('change click', function(){
+		            newstat = $(this).val();
+		        });
+		        
+		        if ($('#message').val() !== '') {
+		            away = $('#message').val();
+		        }
+		        else {
+		            away = opener.top.onlstatus[newstat];
+		        }
+		        
+		        if (typeof(jid) != 'undefined' && jid !== '') {
+		            opener.top.sendCustomPresence(jid, newstat, away);
+		        }
+		        else {
+		            opener.top.changeStatus(newstat, away);
+		        }
+		        
+		        window.close();
+		        
+		        return false;
+		    });
+		})(jQuery);
+		</script>
+	</body>
+</html>

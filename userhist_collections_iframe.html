@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<!--Meta-->
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		
+		<!--Title-->
+		<title>Weruchat - Collections</title>
+		
+		<!--Scripts-->
+		<script type="text/javascript" src="scripts/switchStyle.js"></script>
+		<script type="text/javascript" src="scripts/jsjac.js"></script>
+		<script	type="text/javascript">
+			
+			var ie5 = document.all && document.getElementById;
+			
+			function init(){
+			    var myTable = document.getElementById('myTable');
+			    
+			    if (parent.top.srcW.is.ie) {
+			        myTable.cellSpacing = 0;
+			        myTable.cellPadding = 0;
+			        myTable.border = 0;
+			        myTable.width = '100%';
+			    }
+			    
+			    var rows = myTable.getElementsByTagName("TBODY").item(0).childNodes;
+			    for (var i = 0; i < rows.length; i++) {
+			        rows[i].onmouseover = highlightRow;
+			        rows[i].onmouseout = unhighlightRow;
+			        rows[i].onclick = rowClicked;
+			        rows[i].title = "click to select collection";
+			    }
+			}
+			
+			function highlightRow(e){
+			    var row = ie5 ? event.srcElement.parentNode : e.target.parentNode;
+			    row.className = 'highlighted';
+			}
+			
+			function unhighlightRow(e){
+			    var row = ie5 ? event.srcElement.parentNode : e.target.parentNode;
+			    if (row != selectedRow) 
+			        row.className = '';
+			}
+			
+			var selectedRow;
+			function rowClicked(e){
+			    if (selectedRow) 
+			        selectedRow.className = '';
+			    selectedRow = ie5 ? event.srcElement.parentNode : e.target.parentNode;
+			    selectedRow.className = 'highlighted';
+			    
+			    srcW = parent.srcW;
+			    
+			    // get collection
+			    var aIQ = new JSJaCIQ();
+			    aIQ.setType('get');
+			    aIQ.setTo(srcW.loghost);
+			    var aNode = aIQ.appendNode('retrieve', {
+			        'xmlns': 'http://jabber.org/protocol/archive',
+			        'with': parent.jid,
+			        'start': selectedRow.getAttribute('start')
+			    });
+			    
+			    srcW.Debug.log(aIQ.xml(), 2);
+			    
+			    target = parent;
+			    
+			    srcW.con.send(aIQ, target.handleCollGet);
+			}
+		</script>
+		<style type="text/css">
+			body {
+				background-color: white;
+			}
+			
+			th {
+				font-size: 0.8em;
+				border-bottom: 1px solid black;
+				padding: 2px;
+			}
+			
+			td {
+				border-bottom: 1px solid black;
+				padding: 2px;
+				cursor: default;
+			}
+			
+			tr.highlighted {
+				color: highlighttext;
+				background-color: highlight;
+			}
+		</style>
+	</head>
+	<body></body>
+</html>

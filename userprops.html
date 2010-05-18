@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<!--Meta-->
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		
+		<!--Title-->
+		<title>Weruchat - User Properties</title>
+		
+		<!--Scripts-->
+		<script type="text/javascript" src="scripts/shared.js"></script>
+		<script type="text/javascript" src="scripts/switchStyle.js"></script>
+		<script type="text/javascript" src="scripts/jsjac.js"></script>
+		<script type="text/javascript">
+			<!--
+			var jid;
+			var srcW;
+			var user;
+			var allgrpbox;
+			var curgrpbox;
+			
+			function submitClicked(){
+			    var iq = new JSJaCIQ();
+			    iq.setType('set');
+			    var query = iq.setQuery('jabber:iq:roster');
+			    
+			    var aItem = query.appendChild(iq.getDoc().createElement('item'));
+			    aItem.setAttribute('jid', jid);
+			    aItem.setAttribute('name', document.userprops.nickname.value);
+			    
+			    if (curgrpbox.length > 0) {
+			        for (var i = 0; i < curgrpbox.length; i++) 
+			            aItem.appendChild(iq.getDoc().createElement('group')).appendChild(iq.getDoc().createTextNode(curgrpbox.options[i].value));
+			    }
+			    
+			    srcW.con.send(iq);
+			    window.close();
+			}
+			
+			function addgroup(){
+			    if (document.userprops.newgrp.value != '') {
+			        for (var i = 0; i < curgrpbox.length; i++) {
+			            if (curgrpbox.options[i].value == document.userprops.newgrp.value) 
+			                return false; // nothin to do
+			        }
+			        curgrpbox.options[curgrpbox.length] = new Option(document.userprops.newgrp.value, document.userprops.newgrp.value);
+			    }
+			    return false;
+			}
+			
+			function remgroup(){
+			    if (curgrpbox.selectedIndex < 0) 
+			        return false;
+			    curgrpbox.options[curgrpbox.selectedIndex] = null;
+			    return false;
+			}
+			
+			function setNewGrp(idx){
+			    document.userprops.newgrp.value = allgrpbox.options[idx].value;
+			}
+			
+			function init(){
+			    // determine source window
+			    if (opener.roster) 
+			        srcW = opener.top;
+			    else 
+			        srcW = opener.opener.top;
+			    
+			    getArgs();
+			    jid = passedArgs['jid'];
+			    document.title = "Edit properties for " + jid;
+			    document.getElementById('nickjid').innerHTML = jid;
+			    document.getElementById('groupjid').innerHTML = jid;
+			    user = srcW.roster.getUserByJID(jid);
+			    curgrpbox = document.userprops.curgrps;
+			    allgrpbox = document.userprops.allgrps;
+			    for (var i = 0; i < user.groups.length; i++) {
+			        if (user.groups[i] != '') {
+			            curgrpbox.options[curgrpbox.length] = new Option(user.groups[i], user.groups[i]);
+			        }
+			    }
+			    
+			    for (var i = 0; i < srcW.roster.groups.length; i++) {
+			        if (srcW.roster.groups[i].name != "Unfiled") {
+			            allgrpbox.options[allgrpbox.length] = new Option(srcW.roster.groups[i].name, srcW.roster.groups[i].name);
+			        }
+			    }
+			    
+			    document.userprops.nickname.value = user.name;
+			}
+			
+			function keyPressed(e){
+			    if (e.ctrlKey && e.keyCode == 13) 
+			        submitClicked();
+			    else 
+			        if (e.keyCode == 27) 
+			            window.close();
+			}
+			
+			onkeydown = keyPressed;
+			onload = init;
+			//-->
+		</script>
+		<script for="document" event="onkeydown()" language="JScript">
+			<!--
+			if (window.event.ctrlKey && window.event.keyCode == 13) 
+			    submitClicked();
+			if (window.event.keyCode == 27) 
+			    window.close();
+			//-->
+		</script>
+	</head>
+	<body>
+		<form id="userprops" name="userprops" action="" method="post">
+			<fieldset>
+				<legend>Edit nickname for <span id="nickjid"></span></legend>
+				<ol>
+					<li>
+						<label for="nickname">Nickname</label>
+						<input type="text" id="nickname" name="nickname" class="large" />
+					</li>
+				</ol>
+			</fieldset>
+			<fieldset>
+				<legend>Edit groups for <span id="groupjid"></span></legend>
+				<fieldset>
+					<legend>Available groups</legend>
+					<ol>
+						<li>
+							<label for="">Group</label>
+							<input type="text" id="newgrp" name="newgrp" />
+						</li>
+						<li>
+							<select size="9" name="allgrps" onchange="setNewGrp(this.selectedIndex);">
+							</select>
+						</li>
+						<li>
+							<button onclick="return addgroup();">&gt;</button>
+							<button onclick="return remgroup();">&lt;</button>
+						</li>
+					</ol>
+				</fieldset>
+				<fieldset>
+					<legend>Current groups</legend>
+					<ol>
+						<li>
+							<select size="11" name="curgrps">
+							</select>
+						</li>
+						<li>
+							<button onclick="window.close();">Cancel</button>
+							<button onclick="return submitClicked();">OK</button>
+						</li>
+					</ol>
+				</fieldset>
+			</fieldset>
+		</form>
+	</body>
+</html>
