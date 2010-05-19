@@ -2,21 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 	<head>
     <!--Meta-->
-	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-	
-	<!--Title-->
-	<title>Weruchat</title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	
 	<!--Styles-->
 	<link rel="stylesheet" type="text/css" href="styles/chat.css" />
-	
-	<!--Title-->
-	<title>Weruchat</title>
-  </head>
-  <body>
-  	<iframe src="roster.html" id="jwc_main" name="jwc_main" allowtransparency="yes"></iframe>
-    <iframe src="empty.html" id="jwc_sound" name="jwc_sound" allowtransparency="yes" onload="soundLoaded();"></iframe>
-	
+
 	<!--Scripts-->
     <script type="text/javascript" src="config.js"></script>
     <script type="text/javascript" src="shared.js"></script>
@@ -24,9 +14,12 @@
     <script type="text/javascript" src="sounds.js"></script>
     <script type="text/javascript" src="statusLed.js"></script>
 	<!-- JabberConnection -->
-	
-    <script type="text/javascript" src="scripts/jsjac.js"></script>
+    <script type="text/javascript" src="jsjac.js"></script>
+	<!-- Debugger -->
+    <script type="text/javascript" src="Debugger.js"></script>
     <script type="text/javascript">
+	<!--
+	
 	 /* ***
 	  * JWChat, a web based jabber client
 	  * Copyright (C) 2003-2008 Stefan Strigler <steve@zeank.in-berlin.de>
@@ -104,7 +97,7 @@
 	    user.type = 'groupchat';
 	    roster.print();
 	  }
-	  } catch(e) {  }
+	  } catch(e) { Debug.log(e.message, 1); }
 	  if (!user.chatW || user.chatW.closed)
 	    user.chatW = open("groupchat.html?jid="+escape(aJid)+"&nick="+escape(nick)+"&pass="+escape(pass),"gchatW"+makeWindowName(aJid+"/"+nick),"width=520,height=390,resizable=yes");
 	  user.chatW.focus();
@@ -148,7 +141,7 @@
 	  if (typeof(msg) != 'undefined' && msg != '')
 	    oPresence.setStatus(msg);
 	  
-	  //Debug.log(oPresence.xml(),2);
+	  Debug.log(oPresence.xml(),2);
 	  con.send(oPresence);
 	}
 	
@@ -271,7 +264,7 @@
 	    return;
 	
 	  if(!SOUNDS[action]) {
-	    //Debug.log("no sound for '" + action + "'",1);
+	    Debug.log("no sound for '" + action + "'",1);
 	    return;
 	  }
 	
@@ -326,7 +319,7 @@
 	
 	function changeStatus(val,away,prio) {
 	  
-	  //Debug.log("changeStatus: "+val+","+away+","+prio, 2);
+	  Debug.log("changeStatus: "+val+","+away+","+prio, 2);
 	
 	  onlstat = val;
 	  if (away)
@@ -415,7 +408,7 @@
 	 */
 	function handleMessage(oMsg) {
 	
-	  //Debug.log(oMsg.xml(),2);
+	  Debug.log(oMsg.xml(),2);
 	
 	  if (oMsg.getType() == 'error')
 	    return;
@@ -432,10 +425,10 @@
 	      reason = aInvite.firstChild.firstChild.nodeValue;
 	    if (x.getElementsByTagName('password').item(0))
 	      pass = x.getElementsByTagName('password').item(0).firstChild.nodeValue;
-	    //Debug.log("You have been invited to " + jid + " pass " + pass + " by " + from + "\nreason:" + reason,2);
+	    Debug.log("You have been invited to " + jid + " pass " + pass + " by " + from + "\nreason:" + reason,2);
 	    var user = roster.getUserByJID(cutResource(from));
 	    if (!user) {// users not in roster (yet)
-	      //Debug.log("creating new user "+from,3);
+	      Debug.log("creating new user "+from,3);
 	      user = roster.addUser(new RosterUser(cutResource(from)));
 	      user.lastsrc = eval(user.status + "Led").src;
 	      roster.print();
@@ -451,17 +444,17 @@
 	  
 	  var from = cutResource(oMsg.getFrom());
 	  var type = oMsg.getType();
-	  //Debug.log("from: "+from+"\noMsg.getFrom(): "+oMsg.getFrom(),3);
+	  Debug.log("from: "+from+"\noMsg.getFrom(): "+oMsg.getFrom(),3);
 	
 	  var user = roster.getUserByJID(from);
 	  if (user == null) {// users not in roster (yet)
-	    //.log("creating new user "+from,3);
+	    Debug.log("creating new user "+from,3);
 	    user = roster.addUser(new RosterUser(from));
 	    user.lastsrc = eval(user.status + "Led").src;
 	    roster.print();
 	  }
 	
-	  //Debug.log("got user jid: "+user.jid,3);
+	  Debug.log("got user jid: "+user.jid,3);
 	
 	  var aRoster = roster;
 	  if (type != 'groupchat' && user.roster && from != oMsg.getFrom()) { // private groupchat message
@@ -493,7 +486,7 @@
 	    }
 	  
 	  if (x) {
-	    //Debug.log("found offline message: "+x.getAttribute('stamp'),3);
+	    Debug.log("found offline message: "+x.getAttribute('stamp'),3);
 	    var stamp = x.getAttribute('stamp');
 	    oMsg.jwcTimestamp = new Date(Date.UTC(stamp.substring(0,4),stamp.substring(4,6)-1,stamp.substring(6,8),stamp.substring(9,11),stamp.substring(12,14),stamp.substring(15,17)));
 	  } else
@@ -574,7 +567,7 @@
 	  if (oMsg.getType() != 'error')
 	    return;
 	  
-	  //Debug.log(oMsg.xml(),2);
+	  Debug.log(oMsg.xml(),2);
 	  
 	  var user = roster.getUserByJID(cutResource(oMsg.getFrom()));
 	  
@@ -607,7 +600,7 @@
 	 */
 	
 	function handlePresence(presence) {
-	  //Debug.log(presence.xml(),2);
+	  Debug.log(presence.xml(),2);
 	
 	  var from = cutResource(presence.getFrom());
 	  var type = presence.getType();
@@ -627,7 +620,7 @@
 	    
 	    if (x) {
 	
-	      //Debug.log("detected roster-subsync presence",2);
+	      Debug.log("detected roster-subsync presence",2);
 	
 	      var items = x.getElementsByTagName("item");
 	      for (var i=0; i<items.length; i++) {
@@ -647,7 +640,7 @@
 		  for (var j=0; j<itemGroups.length; j++)
 		    bItem.appendChild(itemGroups.item(j));
 		  
-		  //Debug.log("roster-subsync setting roster:"+aIQ.xml(),2);
+		  Debug.log("roster-subsync setting roster:"+aIQ.xml(),2);
 		  
 		  con.send(aIQ);
 		  
@@ -713,7 +706,7 @@
 	  
 	  var user = roster.getUserByJID(from);
 	  if (!user) { // presence from unsubscribed user
-	    //Debug.log("presence from "+from+" not found on roster", 2);
+	    Debug.log("presence from "+from+" not found on roster", 2);
 	    return;
 	  }
 	  
@@ -726,10 +719,10 @@
 	    }
 	  
 	  if (user.roster && x) {
-	    //Debug.log("muc presence detected", 2);
+	    Debug.log("muc presence detected", 2);
 	    var ofrom = presence.getFrom().substring(presence.getFrom().indexOf('/')+1);
 	    
-	    //Debug.log("jabber.from:"+presence.getFrom()+", ofrom:"+ofrom,3);
+	    Debug.log("jabber.from:"+presence.getFrom()+", ofrom:"+ofrom,3);
 	    
 	    var ouser = user.roster.getUserByJID(presence.getFrom());
 	    if (!ouser) // no user? create one!
@@ -763,7 +756,7 @@
 	      }
 	    }
 	    
-	    //Debug.log("ouser.jid: "+ ouser.jid + ", ouser.fulljid:" + ouser.fulljid + ", ouser.name:"+ouser.name+", user.roster.nick:"+user.roster.nick,3);
+	    Debug.log("ouser.jid: "+ ouser.jid + ", ouser.fulljid:" + ouser.fulljid + ", ouser.name:"+ouser.name+", user.roster.nick:"+user.roster.nick,3);
 	    
 	    
 	    var nickChanged = false;
@@ -854,7 +847,7 @@
 	      }
 	    }
 	    
-	    //Debug.log("<"+ouser.name+"> affiliation:"+ouser.affiliation+", role:"+ouser.role,3);
+	    Debug.log("<"+ouser.name+"> affiliation:"+ouser.affiliation+", role:"+ouser.role,3);
 	
 	    if (!user.roster.getUserByJID(presence.getFrom()) && !nickChanged) {
 	      // add user
@@ -1548,7 +1541,16 @@
 	onload = init;
 	onunload = logout;
 	onresize = updateStyleIE;
+	
+	//-->
     </script>
     <script type="text/javascript" src="roster.js"></script>
+	
+	<!--Title-->
+	<title>Weruchat</title>
+  </head>
+  <body>
+  	<iframe src="roster.html" id="jwc_main" name="jwc_main" allowtransparency="yes"></iframe>
+    <iframe src="empty.html" id="jwc_sound" name="jwc_sound" allowtransparency="yes" onload="soundLoaded();"></iframe>
   </body>
 </html>
